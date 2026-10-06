@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Whats Bayz — your conversations</title>
+  <style>
+    :root{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-synthesis:none;color:#202435;background:#e9ebf1;--accent:#6757d9;--muted:#788195;--line:#e7e9f0}
+    *{box-sizing:border-box}body{margin:0;padding:20px;height:100vh;height:100dvh;overflow:hidden}button,input{font:inherit}button,a,input{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{cursor:wait;opacity:.55}button:focus-visible,a:focus-visible{outline:3px solid #a499ff;outline-offset:3px}button{transition:background .15s,transform .15s}button:active{transform:translateY(1px)}svg{width:19px;height:19px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}button svg{pointer-events:none}.sprite{display:none}
+    .app{display:grid;grid-template-columns:324px minmax(0,1fr);height:100%;max-width:1680px;margin:auto;overflow:hidden;border-radius:18px;background:#fff;box-shadow:0 18px 65px #24283c14}aside,main{min-height:0;min-width:0;overflow:hidden}.sidebar{display:flex;flex-direction:column;background:#191d2d;color:#eef0f7}.brand{padding:27px 24px 23px;display:flex;gap:12px;align-items:center}.brand-logo{display:grid;place-items:center;width:40px;height:40px;border-radius:13px;background:#7160e8;box-shadow:0 5px 18px #06091a33}.brand h1{font-size:21px;letter-spacing:-.7px;margin:0}.brand small{display:block;color:#929aaf;margin-top:3px;font-size:11px;letter-spacing:.5px}.side-search{margin:0 18px 16px;display:flex;align-items:center;gap:9px;background:#282d40;border:1px solid #363c51;border-radius:10px;padding:0 12px;color:#949db4}.side-search input{min-width:0;width:100%;padding:11px 0;background:none;border:0;outline:none;color:#fff;font-size:13px}.side-search input::placeholder{color:#929bb1}.side-search:focus-within{border-color:#887af0}.side-heading{display:flex;justify-content:space-between;padding:0 23px 11px;color:#a1a9bd;font-size:11px;font-weight:650;text-transform:uppercase;letter-spacing:1.2px}.tabs{display:flex;gap:6px;padding:0 18px 15px}.tabs button{background:none;color:#a9b2c7;border:0;padding:7px 12px;border-radius:7px;font-size:12px}.tabs button.active{background:#35304f;color:#c6bfff}.tabs button:hover{background:#2c3144}#chatlist{overflow-y:auto;min-height:0;flex:1;overscroll-behavior:contain;padding:0 10px 15px;scrollbar-color:#414961 transparent;scrollbar-width:thin}.chat{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;background:none;color:inherit;padding:14px 12px;border-radius:10px;margin:2px 0}.chat:hover{background:#24293c}.chat.active{background:#35304f;box-shadow:inset 3px 0 #9a8af8}.avatar{width:43px;height:43px;border-radius:14px;display:grid;place-items:center;flex:none;font-size:14px;font-weight:700;background:#2c3650;color:#b4c7ef}.chat:nth-child(4n+2) .avatar{background:#3a304b;color:#c7b4df}.chat:nth-child(4n+3) .avatar{background:#25413f;color:#a3d8cd}.chat:nth-child(4n) .avatar{background:#403a30;color:#e0cfaa}.chatmeta{flex:1;min-width:0}.chatline{display:flex;align-items:baseline;justify-content:space-between;gap:8px}.chatname{font-size:13px;font-weight:550;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.chatdate{font-size:10px;color:#9199ae;white-space:nowrap}.preview{font-size:12px;color:#979fb6;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.side-footer{display:flex;gap:9px;align-items:center;padding:16px 22px;font-size:11px;color:#98a4b7;border-top:1px solid #2b3042}.side-footer svg{width:15px;height:15px;color:#83cbb8}
+    main{display:flex;flex-direction:column;position:relative;background:#f8f9fc}.welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;background:radial-gradient(ellipse at 50% 30%,#eeebff,transparent 65%)}.welcome-icon{width:84px;height:84px;border-radius:27px;background:white;box-shadow:0 12px 40px #6554c414;display:grid;place-items:center;color:var(--accent);margin-bottom:24px}.welcome-icon svg{width:36px;height:36px}.eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#8c80c4}.welcome h2{font-size:32px;letter-spacing:-1px;font-weight:650;margin:12px 0}.welcome p{font-size:14px;line-height:1.8;max-width:390px;color:#7a8194;margin:0}.welcome .privacy-pill{font-size:11px;margin-top:30px;padding:8px 13px;background:#fff;border:1px solid #e7e5f4;border-radius:20px;color:#75728c}
+    .conversation-head{flex:none;min-height:91px;padding:18px 27px;display:flex;align-items:center;gap:13px;background:white;border-bottom:1px solid var(--line)}.conversation-head .avatar{background:#eeeaff;color:#6a57c5}.head-info{flex:1;min-width:0}.head-title{font-size:17px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-.3px}.head-sub{margin-top:5px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}.head-sub .dot{height:5px;width:5px;background:#72bda7;border-radius:50%}.toolbar{display:flex;gap:7px;align-items:center}.tool{border:1px solid var(--line);border-radius:9px;background:#fff;padding:9px 11px;color:#697186;display:flex;gap:7px;align-items:center;font-size:12px;white-space:nowrap}.tool:hover{background:#f4f2ff;border-color:#cfc8f3;color:var(--accent)}.tool.selected{background:#eeeaff;color:var(--accent);border-color:#dcd4ff}.tool.primary{background:var(--accent);border-color:var(--accent);color:white}.tool.icon{padding:9px}.back-button{display:none}.conversation-body{flex:1;min-height:0;display:flex;overflow:hidden;position:relative}.thread{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column}.messages{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-color:#c6cbd9 transparent;scrollbar-width:thin;overflow-anchor:none;padding:20px clamp(18px,4vw,70px);display:flex;flex-direction:column;gap:8px}.history{flex:none;text-align:center;padding:7px;font-size:10px;color:#9aa1b1;letter-spacing:.1px}.history button{border:1px solid #e6e8f0;background:#fff;border-radius:20px;padding:7px 13px;font-size:11px;color:#8c7ec6}.history button:hover{color:var(--accent);border-color:#c8bdf5}.day{align-self:center;flex:none;padding:20px 10px 11px;color:#9299ab;font-size:10px;font-weight:650;letter-spacing:.6px;text-transform:uppercase}.bubble{align-self:flex-start;max-width:min(78%,620px);flex:none;background:#fff;border:1px solid #e9ebf2;border-radius:4px 15px 15px 15px;padding:11px 14px 8px;box-shadow:0 2px 4px #26385803;overflow-wrap:anywhere;font-size:13px;line-height:1.65;scroll-margin:100px}.bubble.out{align-self:flex-end;border-color:#e3dcfb;background:#efeaff;border-radius:15px 4px 15px 15px}.bubble.highlight{outline:2px solid #b496ff;outline-offset:4px;background:#faf0c8}.sender{font-size:11px;color:#7760b8;font-weight:650;margin-bottom:4px}.message-text{white-space:pre-wrap;unicode-bidi:plaintext}.stamp{display:flex;gap:5px;align-items:center;justify-content:flex-end;font-size:9px;color:#9198aa;line-height:1.3;margin-top:7px}.out .stamp{color:#9b90b5}.stamp svg{width:12px;height:12px}.attachment{margin:0 0 6px}.attachment img,.attachment video{display:block;max-width:100%;width:320px;max-height:370px;object-fit:contain;border-radius:9px;background:#e8e9ef}.attachment img{cursor:zoom-in;min-height:60px}.attachment audio{display:block;width:280px;max-width:100%;margin:4px 0 10px}.file-link{display:flex;align-items:center;gap:10px;border:1px solid #dde0eb;border-radius:9px;padding:10px;color:#666082;text-decoration:none;background:#ffffff80;font-size:11px;max-width:340px}.file-link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.file-link:hover{background:#fff}.missing{font-size:11px;padding:10px;border:1px dashed #d3d5df;border-radius:8px;color:#8b8b9c}.attachment pre{white-space:pre-wrap;font-size:11px;max-width:300px}.thread-footer{padding:12px 25px;border-top:1px solid var(--line);color:#8b93a5;font-size:10px;display:flex;justify-content:space-between;gap:10px;background:#fff;flex:none}.thread-footer svg{width:12px;height:12px}.thread-footer span{display:flex;align-items:center;gap:6px}.error-note{border:1px solid #edc3c3;color:#9c5353;background:#fff5f5;border-radius:8px;padding:12px;font-size:12px}.empty{padding:28px 18px;text-align:center;font-size:12px;color:#8790a7;line-height:1.8}.loader{display:inline-block;width:14px;height:14px;border:2px solid #dad4ef;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-right:8px;vertical-align:middle}@keyframes spin{to{transform:rotate(360deg)}}
+    .search-panel{width:310px;flex:none;min-height:0;display:flex;flex-direction:column;border-left:1px solid var(--line);background:#fff}.search-panel[hidden]{display:none}.search-heading{display:flex;align-items:center;justify-content:space-between;padding:20px 18px 13px}.search-heading h3{margin:0;font-size:13px;font-weight:650}.search-field{display:flex;gap:9px;align-items:center;margin:0 16px 11px;border:1px solid #d6d1ee;border-radius:9px;background:#faf9ff;padding:0 11px;color:#8a7cc3}.search-field:focus-within{box-shadow:0 0 0 3px #eeeaff;border-color:#9485da}.search-field input{padding:11px 0;outline:none;min-width:0;width:100%;border:0;background:none;font-size:12px;color:#31374b}.search-summary{padding:0 19px 13px;font-size:10px;color:#939bad}.search-results{flex:1;min-height:0;overflow-y:auto;padding:0 10px 16px;scrollbar-width:thin}.result{display:block;text-align:left;width:100%;border:1px solid transparent;background:none;border-radius:10px;padding:12px;margin:3px 0;color:#4e556d}.result:hover{background:#f8f6ff}.result.active{background:#f1edff;border-color:#e1d9fa}.result-top{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:#9299ab;margin-bottom:7px}.result-sender{color:#8672b6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%}.result-preview{font-size:12px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}.result-bottom{font-size:9px;color:#a0a6b6;margin-top:7px}.result-more{display:block;width:calc(100% - 16px);margin:8px;padding:10px;border:1px solid #ded8f2;border-radius:8px;background:#f9f7ff;color:#8b79b7;font-size:11px}mark{color:inherit;background:#ffecac;border-radius:3px;padding:0 1px}.search-help{padding:23px 15px;text-align:center;color:#9299ab;font-size:12px;line-height:1.9}.lightbox{max-width:95vw;max-height:95vh;border:0;border-radius:14px;padding:18px;background:#fff;box-shadow:0 20px 80px #0005}.lightbox::backdrop{background:#111624bd;backdrop-filter:blur(6px)}.lightbox img{display:block;max-width:85vw;max-height:75vh;object-fit:contain}.lightbox-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;font-size:12px;color:#81899b}.lightbox-title{max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    @media(min-width:1500px){.search-panel{width:350px}}@media(max-width:1100px){body{padding:10px}.app{grid-template-columns:290px minmax(0,1fr)}.conversation-head{padding:16px}.toolbar .label{display:none}.messages{padding:18px}.search-panel{width:285px}.bubble{max-width:90%}}@media(max-width:900px){.search-panel{position:absolute;inset:0 0 0 auto;width:min(350px,100%);box-shadow:-12px 0 40px #29274418;z-index:5}.conversation-head{min-height:80px}.toolbar .tool{padding:8px}.head-title{font-size:15px}.avatar{width:38px;height:38px}.messages{padding:15px}}
+    @media(max-width:640px){body{padding:0}.app{border-radius:0;display:block}.sidebar{height:100%;width:100%}main{display:none;height:100%}body.open .sidebar{display:none}body.open main{display:flex}.back-button{display:flex}.brand{padding:24px}.conversation-head{gap:8px;padding:12px}.conversation-head>.avatar{display:none}.head-sub{font-size:10px}.toolbar{gap:4px}.toolbar .tool{padding:8px}.bubble{max-width:89%;font-size:13px}.thread-footer{padding:11px 15px}.thread-footer .footer-privacy{display:none}.messages{padding:14px}.search-panel{width:100%}.welcome h2{font-size:25px}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+    /* Whats Bayz: WhatsApp-inspired greens, warm conversation canvas. */
+    :root{--accent:#008069;--muted:#72837d;--line:#e0e9e5;color:#172b24;background:#dbe5df}
+    .app{box-shadow:0 18px 65px #153b2518}.sidebar{background:#073e35;color:#eef8f4}.brand-logo{background:#25a880;box-shadow:0 5px 18px #02231e40}.brand small{color:#92b7aa}.side-search{background:#164e43;border-color:#286050;color:#91bbae}.side-search input::placeholder{color:#97bbae}.side-search:focus-within{border-color:#6fc5a2}.side-heading{color:#9fbdaf}.tabs button{color:#a0c4b6}.tabs button.active{background:#22634d;color:#d5fae7}.tabs button:hover{background:#205745}#chatlist{scrollbar-color:#386959 transparent}.chat:hover{background:#155043}.chat.active{background:#20614b;box-shadow:inset 3px 0 #78d2a7}.chatdate{color:#a1b8ae}.preview{color:#a2c0b3}.avatar{background:#23594e;color:#b3e1cd}.chat:nth-child(4n+2) .avatar{background:#315d4b;color:#cae4c8}.chat:nth-child(4n+3) .avatar{background:#235d58;color:#afe0d8}.chat:nth-child(4n) .avatar{background:#435e43;color:#d1e6bd}.side-footer{color:#a5c3b4;border-color:#28564a}.side-footer svg{color:#80d4ac}
+    main{background:#efeae2}.welcome{background:radial-gradient(ellipse at 50% 30%,#e4f3e9,transparent 65%)}.welcome-icon{box-shadow:0 12px 40px #306b4615}.eyebrow{color:#598672}.welcome p{color:#75857a}.welcome .privacy-pill{border-color:#d9e7de;color:#698473}.conversation-head .avatar{background:#e2f3e8;color:#24845b}.head-sub .dot{background:#25a880}.tool{color:#678077}.tool:hover{background:#edf8f1;border-color:#bcddc9;color:#008069}.tool.selected{background:#e1f4e8;border-color:#bcddc9}.tool.primary{background:#008069;border-color:#008069}.messages{scrollbar-color:#bccbbf transparent;background-image:radial-gradient(#929c8720 .8px,transparent .8px);background-size:20px 20px}.history{color:#819384}.history button{border-color:#dce6de;color:#43866b}.history button:hover{border-color:#afd2bd;color:#008069}.day{color:#6f8376}.bubble{border-color:#e1e8e1;box-shadow:0 1px 2px #263b2b08}.bubble.out{border-color:#d0e9c9;background:#d9fdd3}.bubble.highlight{outline-color:#41ad85;background:#fff2bf}.sender{color:#168066}.stamp{color:#8c9a8f}.out .stamp{color:#7c9778}.file-link{border-color:#cee0d3;color:#3e755c}.missing{border-color:#c6d8cb;color:#768e7b}.thread-footer{color:#849489}.search-heading h3{color:#214736}.search-field{border-color:#bedbcb;background:#f4faf6;color:#4d9676}.search-field:focus-within{box-shadow:0 0 0 3px #e4f4e9;border-color:#70b992}.search-summary,.search-help{color:#87998d}.result{color:#466153}.result:hover{background:#f0f8f3}.result.active{background:#e7f5ec;border-color:#cbe4d4}.result-sender{color:#2c8c64}.result-top{color:#85998c}.result-bottom{color:#91a296}.result-more{border-color:#c7e0d0;background:#f1f9f4;color:#408165}.lightbox-bar{color:#738779}button:focus-visible,a:focus-visible{outline-color:#52b78e}
+    .tool.primary:hover{background:#006953;border-color:#006953;color:white}.loader{border-color:#c6dfd1;border-top-color:var(--accent)}
+  </style>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true"><defs>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+  <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="5" rx="1.5"/><path d="M5 8v12h14V8M9 12h6"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6z"/><path d="m8 12 3 3 5-6"/></symbol>
+  <symbol id="i-start" viewBox="0 0 24 24"><path d="M5 4v16m14-15-11 7 11 7z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v15m-6-6 6 6 6-6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="m14 5-7 7 7 7"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H5v18h14V8zM14 3v5h5M8 13h8M8 17h5"/></symbol>
+  <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 15a3 3 0 0 1-3 3H8l-5 3V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3zM7 8h10M7 12h6"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></symbol>
+</defs></svg>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-logo"><svg aria-hidden="true"><use href="#i-message"/></svg></div><div><h1>Whats Bayz</h1><small>YOUR CONVERSATIONS, PRESERVED</small></div></div>
+    <label class="side-search"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="search" type="search" placeholder="Find a conversation…" aria-label="Find conversations" autocomplete="off"></label>
+    <div class="side-heading"><span>Conversations</span><span id="chatcount">—</span></div>
+    <div class="tabs" role="group" aria-label="Filter conversations"><button class="active" data-filter="all" aria-pressed="true">All</button><button data-filter="groups" aria-pressed="false">Groups</button><button data-filter="archived" aria-pressed="false">Archived</button></div>
+    <nav id="chatlist" aria-label="Conversations"><div class="empty"><span class="loader"></span>Opening Whats Bayz…</div></nav>
+    <div class="side-footer"><svg aria-hidden="true"><use href="#i-shield"/></svg>Local & private. Nothing uploaded.</div>
+  </aside>
+  <main id="main"><div class="welcome"><div class="welcome-icon"><svg aria-hidden="true"><use href="#i-message"/></svg></div><div class="eyebrow">Welcome to Whats Bayz</div><h2>Every conversation has a story.</h2><p>Open a WhatsApp chat to explore your history, revisit shared moments, or find that one message.</p><div class="privacy-pill">Read-only backup · stays on your Mac</div></div></main>
+</div>
+<dialog id="lightbox" class="lightbox"><div class="lightbox-bar"><span class="lightbox-title"></span><button class="tool icon" id="close-lightbox" aria-label="Close image"><svg aria-hidden="true"><use href="#i-close"/></svg></button></div><img alt="Attachment"></dialog>
+<script>
+'use strict';
+const $ = (selector, root = document) => root.querySelector(selector);
+const list = $('#chatlist'), main = $('#main'), search = $('#search');
+let chats = [], active = null, filter = 'all', request = 0, state = null, resultState = null, listTimer, chatSearchTimer;
+const icon = name => `<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;
+async function api(url, signal) {
+  const response = await fetch(url, {signal});
+  const data = await response.json();
+  if (!response.ok || data.error) throw Error(data.error || response.statusText);
+  return data;
+}
+const epoch = value => value == null ? null : new Date((Number(value) + 978307200) * 1000);
+const date = value => epoch(value)?.toLocaleDateString([], {year:'numeric', month:'short', day:'numeric'}) || 'Unknown date';
+const shortDate = value => epoch(value)?.toLocaleDateString([], {month:'short', day:'numeric'}) || '';
+const time = value => epoch(value)?.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) || '';
+const initials = name => Array.from((name || '?').trim()).slice(0, 2).join('').toUpperCase();
+function element(tag, className, text) {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  if (text != null) el.textContent = text;
+  return el;
+}
+function status(box, text, error = false) {
+  box.replaceChildren(element('div', error ? 'error-note' : 'empty', text));
+}
+function highlight(el, value, query) {
+  const text = String(value || '');
+  if (!query) { el.textContent = text; return; }
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(escaped, 'giu');
+  let last = 0;
+  for (const match of text.matchAll(regex)) {
+    el.append(document.createTextNode(text.slice(last, match.index)), element('mark', '', match[0]));
+    last = match.index + match[0].length;
+  }
+  el.append(document.createTextNode(text.slice(last)));
+}
+function renderChats() {
+  const needle = search.value.trim().toLocaleLowerCase();
+  const visible = chats.filter(c => (!needle || [c.name, c.number, c.preview].some(v => String(v || '').toLocaleLowerCase().includes(needle))) &&
+    (filter !== 'groups' || c.jid?.endsWith('@g.us')) && (filter !== 'archived' || c.archived));
+  $('#chatcount').textContent = visible.length.toLocaleString();
+  list.replaceChildren();
+  if (!visible.length) { status(list, 'No conversations found.'); return; }
+  const fragment = document.createDocumentFragment();
+  for (const c of visible) {
+    const button = element('button', 'chat' + (active?.id === c.id ? ' active' : ''));
+    button.type = 'button';
+    button.setAttribute('aria-current', active?.id === c.id ? 'true' : 'false');
+    const avatar = element('div', 'avatar', initials(c.name));
+    const meta = element('div', 'chatmeta'), line = element('div', 'chatline');
+    line.append(element('span', 'chatname', c.name), element('span', 'chatdate', shortDate(c.date)));
+    meta.append(line, element('div', 'preview', c.preview || `${c.total.toLocaleString()} messages`));
+    button.append(avatar, meta);
+    button.addEventListener('click', () => openChat(c));
+    fragment.append(button);
+  }
+  list.append(fragment);
+}
+async function loadChats() {
+  try { chats = await api('/api/chats'); renderChats(); }
+  catch (error) { status(list, 'Could not open archive: ' + error.message, true); }
+}
+function header(c) {
+  main.innerHTML = `
+    <header class="conversation-head">
+      <button class="tool icon back-button" id="back" aria-label="Back to conversations">${icon('back')}</button>
+      <div class="avatar"></div><div class="head-info"><div class="head-title"></div><div class="head-sub"><span class="dot"></span><span class="chat-details"></span></div></div>
+      <div class="toolbar">
+        <button class="tool" id="start" title="Go to the earliest backed-up message">${icon('start')}<span class="label">Go to start</span></button>
+        <button class="tool" id="latest" title="Go to the latest message">${icon('down')}<span class="label">Latest</span></button>
+        <button class="tool primary icon" id="toggle-search" title="Search this conversation (⌘/Ctrl+F)" aria-label="Search this conversation" aria-expanded="false">${icon('search')}</button>
+      </div>
+    </header>
+    <div class="conversation-body">
+      <section class="thread" aria-label="Conversation">
+        <div class="messages" id="messages" tabindex="0" aria-label="Messages"><div class="empty"><span class="loader"></span>Opening conversation…</div></div>
+        <footer class="thread-footer"><span id="loaded-count"></span><span class="footer-privacy">${icon('shield')}Read-only archive · not a live chat</span></footer>
+      </section>
+      <section class="search-panel" id="chat-search-panel" aria-label="Search this conversation" hidden>
+        <div class="search-heading"><h3>Search this conversation</h3><button class="tool icon" id="close-search" aria-label="Close search">${icon('close')}</button></div>
+        <label class="search-field">${icon('search')}<input type="search" id="chat-search" placeholder="Search all messages…" aria-label="Search all messages in this chat" autocomplete="off"></label>
+        <div class="search-summary" id="search-summary" aria-live="polite">Searches the entire backed-up conversation.</div>
+        <div class="search-results" id="search-results"><div class="search-help">A name, a phrase, a memory.<br>Find messages even if they aren’t loaded yet.</div></div>
+      </section>
+    </div>`;
+  $('.conversation-head .avatar').textContent = initials(c.name);
+  $('.head-title').textContent = c.name;
+  $('.chat-details').textContent = `${c.number ? c.number + ' · ' : ''}${c.total.toLocaleString()} messages${c.archived ? ' · Archived' : ''}`;
+  $('#chat-search').addEventListener('input', () => {
+    clearTimeout(chatSearchTimer);
+    resultState?.controller?.abort();
+    resultState = null;
+    chatSearchTimer = setTimeout(() => searchMessages(false), 300);
+  });
+  return $('#messages');
+}
+async function openChat(c, start = false) {
+  resultState?.controller?.abort();
+  clearTimeout(chatSearchTimer);
+  resultState = null;
+  active = c;
+  document.body.classList.add('open');
+  renderChats();
+  const box = header(c);
+  await loadWindow(box, start ? '&start=1' : '', start ? 'start' : 'latest');
+}
+async function loadWindow(box, extra = '', position = 'latest', target = null) {
+  const token = ++request;
+  const s = {box, items:[], busy:true, older:false, newer:false, token, chat:active.id, highlight:target};
+  state = s;
+  box.onscroll = () => {
+    if (state !== s || s.busy) return;
+    if (box.scrollTop < 80 && s.older) loadPage('older');
+    else if (box.scrollHeight - box.scrollTop - box.clientHeight < 80 && s.newer) loadPage('newer');
+  };
+  status(box, 'Loading messages…');
+  try {
+    const data = await api(`/api/messages?chat=${s.chat}&limit=150${extra}`);
+    if (token !== request) return;
+    s.items = data.messages; s.older = data.has_older; s.newer = data.has_newer;
+    box.replaceChildren(element('div', 'history top-history'));
+    box.append(messageNodes(s.items), element('div', 'history bottom-history'));
+    updateHistory(s);
+    if (position === 'target') {
+      const message = box.querySelector(`[data-id="${target}"]`);
+      message?.classList.add('highlight');
+      message?.scrollIntoView({block:'center'});
+    } else box.scrollTop = position === 'start' ? 0 : box.scrollHeight;
+  } catch (error) { if (token === request) status(box, 'Could not load messages: ' + error.message, true); }
+  finally { if (state === s) s.busy = false; }
+}
+function updateHistory(s) {
+  for (const [selector, direction, label] of [['.top-history','older','Beginning of backed-up history'], ['.bottom-history','newer','You’ve reached the latest backed-up message']]) {
+    const holder = $(selector, s.box);
+    if (!holder) continue;
+    holder.replaceChildren();
+    if (s[direction]) {
+      const button = element('button', '', `Load ${direction} messages`);
+      button.dataset.direction = direction;
+      holder.append(button);
+    } else holder.textContent = label;
+  }
+  if (!s.items.length) $('.top-history', s.box).textContent = 'No messages in this conversation.';
+  $('#loaded-count').textContent = `${s.items.length.toLocaleString()} of ${active.total.toLocaleString()} messages loaded`;
+}
+function mediaError(media) {
+  media.addEventListener('error', () => {
+    if (media.nextElementSibling?.classList.contains('codec-note')) return;
+    media.after(element('div', 'missing codec-note', 'Preview unavailable in this browser. Download to open.'));
+  }, {once:true});
+}
+function attachment(bubble, m) {
+  const el = element('div', 'attachment'), a = m.attachment;
+  if (!a) return;
+  if (a.kind === 'contact') {
+    el.append(element('div', 'sender', a.name), element('pre', '', m.vcard || ''));
+    bubble.append(el);
+    return;
+  }
+  if (a.kind === 'location') {
+    el.append(element('div', 'sender', a.name), element('div', '', `Latitude: ${m.latitude} · Longitude: ${m.longitude}`));
+    bubble.append(el);
+    return;
+  }
+  const url = `/api/media?message=${m.id}`;
+  if (a?.available) {
+    let media;
+    if (a.mime.startsWith('image/')) {
+      media = element('img'); media.alt = a.name; media.loading = 'lazy';
+      media.addEventListener('click', () => {
+        const dialog = $('#lightbox');
+        $('.lightbox-title', dialog).textContent = a.name;
+        $('img', dialog).src = url;
+        dialog.showModal();
+      });
+    } else if (a.mime.startsWith('video/')) {
+      media = element('video'); media.controls = true; media.preload = 'none';
+      if (a.thumbnail) media.poster = url + '&thumbnail=1';
+    } else if (a.mime.startsWith('audio/')) {
+      media = element('audio'); media.controls = true; media.preload = 'none';
+    }
+    if (media) { media.src = url; mediaError(media); el.append(media); }
+    const link = element('a', 'file-link'); link.href = url + '&download=1'; link.download = a.name;
+    link.innerHTML = icon('file'); link.append(element('span', '', a.name)); link.insertAdjacentHTML('beforeend', icon('down'));
+    el.append(link);
+  } else {
+    if (a?.thumbnail) {
+      const img = element('img'); img.src = url + '&thumbnail=1'; img.alt = 'Attachment preview'; img.loading = 'lazy'; mediaError(img); el.append(img);
+    }
+    el.append(element('div', 'missing', `${a?.name || m.contact_name || 'Attachment'} — not included in backup`));
+  }
+  bubble.append(el);
+}
+function messageNodes(items, previousDay = '') {
+  const fragment = document.createDocumentFragment();
+  let lastDay = previousDay;
+  for (const m of items) {
+    const day = date(m.date);
+    if (day !== lastDay) { fragment.append(element('div', 'day', day)); lastDay = day; }
+    const bubble = element('article', 'bubble' + (m.outgoing ? ' out' : ''));
+    bubble.dataset.id = m.id;
+    if (!m.outgoing && m.sender && m.sender !== 'Unknown contact') bubble.append(element('div', 'sender', m.sender));
+    attachment(bubble, m);
+    const text = element('div', 'message-text'); text.dir = 'auto';
+    highlight(text, m.text || m.title || (!m.attachment ? '[System or unsupported message]' : ''), resultState?.query);
+    bubble.append(text);
+    const stamp = element('div', 'stamp', time(m.date));
+    if (m.starred) stamp.insertAdjacentHTML('beforeend', icon('star'));
+    bubble.append(stamp);
+    fragment.append(bubble);
+  }
+  return fragment;
+}
+async function loadPage(direction) {
+  const s = state;
+  if (!s || s.busy || !s.items.length || !s[direction]) return;
+  s.busy = true;
+  const c = direction === 'older' ? s.items[0] : s.items.at(-1);
+  const holder = $(direction === 'older' ? '.top-history' : '.bottom-history', s.box);
+  const button = $('button', holder);
+  if (button) { button.disabled = true; button.textContent = 'Loading…'; }
+  const anchor = Array.from(s.box.querySelectorAll('.bubble')).find(el => el.getBoundingClientRect().bottom > s.box.getBoundingClientRect().top);
+  const offset = anchor?.getBoundingClientRect().top;
+  try {
+    const data = await api(`/api/messages?chat=${s.chat}&limit=150&sort=${c.sort}&${direction === 'older' ? 'before_id' : 'after_id'}=${c.id}`);
+    if (s !== state) return;
+    const ids = new Set(s.items.map(m => m.id));
+    const items = data.messages.filter(m => !ids.has(m.id));
+    const previousDay = direction === 'newer' ? date(s.items.at(-1).date) : '';
+    if (direction === 'older') {
+      const firstDay = $('.day', s.box);
+      if (items.length && firstDay && date(items.at(-1).date) === firstDay.textContent) firstDay.remove();
+      holder.after(messageNodes(items));
+    } else holder.before(messageNodes(items, previousDay));
+    s.items = direction === 'older' ? [...items, ...s.items] : [...s.items, ...items];
+    s[direction] = direction === 'older' ? data.has_older : data.has_newer;
+    updateHistory(s);
+    if (anchor) s.box.scrollTop += anchor.getBoundingClientRect().top - offset;
+  } catch (error) {
+    if (s === state) { updateHistory(s); $('#loaded-count').textContent = 'Loading failed. Retry using the history button.'; }
+  } finally { s.busy = false; }
+}
+function toggleSearch(show = $('#chat-search-panel')?.hidden) {
+  const panel = $('#chat-search-panel');
+  if (!panel) return;
+  panel.hidden = !show;
+  $('#toggle-search').setAttribute('aria-expanded', String(show));
+  if (show) $('#chat-search').focus();
+}
+function searchSnippet(m, query) {
+  const source = m.text || m.title || m.contact_name || (m.media ? 'Attachment' : 'Message');
+  const index = source.toLocaleLowerCase().indexOf(query.toLocaleLowerCase());
+  const start = index > 90 ? index - 70 : 0;
+  const end = Math.min(source.length, start + 260);
+  return (start ? '…' : '') + source.slice(start, end) + (end < source.length ? '…' : '');
+}
+async function searchMessages(more = false) {
+  if (!active || !$('#chat-search')) return;
+  const query = $('#chat-search').value.trim();
+  if (!query) {
+    resultState?.controller?.abort(); resultState = null;
+    $('#search-summary').textContent = 'Searches the entire backed-up conversation.';
+    status($('#search-results'), 'Search text, attachment captions or sender names.');
+    return;
+  }
+  let rs;
+  if (more) {
+    rs = resultState;
+    if (!rs || rs.busy || !rs.more) return;
+  } else {
+    resultState?.controller?.abort();
+    rs = {query, chat:active.id, results:[], total:0, more:false, busy:false, selected:null, controller:new AbortController()};
+    resultState = rs;
+    status($('#search-results'), 'Searching the entire conversation…');
+  }
+  rs.busy = true;
+  $('#search-summary').textContent = 'Searching…';
+  const moreButton = $('.result-more');
+  if (moreButton) moreButton.disabled = true;
+  try {
+    const data = await api(`/api/search?chat=${rs.chat}&q=${encodeURIComponent(rs.query)}&offset=${rs.results.length}&limit=50`, rs.controller.signal);
+    if (rs !== resultState || rs.chat !== active.id) return;
+    rs.results.push(...data.results); rs.total = data.total; rs.more = data.has_more;
+    renderResults(rs);
+  } catch (error) {
+    if (rs !== resultState || error.name === 'AbortError') return;
+    $('#search-summary').textContent = 'Search failed';
+    status($('#search-results'), error.message, true);
+  } finally { rs.busy = false; }
+}
+function renderResults(rs) {
+  const box = $('#search-results'), scroll = box.scrollTop;
+  box.replaceChildren();
+  $('#search-summary').textContent = `${rs.total.toLocaleString()} ${rs.total === 1 ? 'match' : 'matches'} · newest first · ${rs.results.length.toLocaleString()} shown`;
+  if (!rs.results.length) { status(box, 'No matches in this conversation. Try another phrase.'); return; }
+  for (const m of rs.results) {
+    const button = element('button', 'result' + (rs.selected === m.id ? ' active' : ''));
+    const top = element('div', 'result-top');
+    top.append(element('span', 'result-sender', m.outgoing ? 'You' : m.sender), element('span', '', date(m.date)));
+    const preview = element('div', 'result-preview'); preview.dir = 'auto';
+    highlight(preview, searchSnippet(m, rs.query), rs.query);
+    button.append(top, preview, element('div', 'result-bottom', time(m.date) + ' · Jump to message ↗'));
+    button.addEventListener('click', async () => {
+      rs.selected = m.id; renderResults(rs);
+      if (window.innerWidth <= 900) toggleSearch(false);
+      await loadWindow($('#messages'), '&around=' + m.id, 'target', m.id);
+    });
+    box.append(button);
+  }
+  if (rs.more) {
+    const more = element('button', 'result-more', 'Load more results');
+    more.addEventListener('click', () => searchMessages(true)); box.append(more);
+  }
+  box.scrollTop = scroll;
+}
+main.addEventListener('click', e => {
+  const button = e.target.closest('button');
+  if (!button) return;
+  if (button.id === 'start') loadWindow($('#messages'), '&start=1', 'start');
+  else if (button.id === 'latest') loadWindow($('#messages'));
+  else if (button.id === 'back') document.body.classList.remove('open');
+  else if (button.id === 'toggle-search') toggleSearch();
+  else if (button.id === 'close-search') toggleSearch(false);
+  else if (button.dataset.direction) loadPage(button.dataset.direction);
+});
+$('.tabs').addEventListener('click', e => {
+  if (!e.target.dataset.filter) return;
+  filter = e.target.dataset.filter;
+  for (const button of document.querySelectorAll('.tabs button')) {
+    const selected = button.dataset.filter === filter;
+    button.classList.toggle('active', selected); button.setAttribute('aria-pressed', String(selected));
+  }
+  renderChats();
+});
+search.addEventListener('input', () => { clearTimeout(listTimer); listTimer = setTimeout(renderChats, 120); });
+$('#close-lightbox').addEventListener('click', () => $('#lightbox').close());
+$('#lightbox').addEventListener('click', e => { if (e.target === $('#lightbox')) $('#lightbox').close(); });
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'f' && active && !$('#lightbox').open) { e.preventDefault(); toggleSearch(true); }
+  if (e.key === 'Escape' && !$('#lightbox').open && $('#chat-search-panel') && !$('#chat-search-panel').hidden) { toggleSearch(false); $('#toggle-search').focus(); }
+});
+loadChats();
+</script>
+</body>
+</html>
