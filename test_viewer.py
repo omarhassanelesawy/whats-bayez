@@ -50,6 +50,43 @@ class ViewerTests(unittest.TestCase):
         self.assertTrue(all(server.readable(c['name']) for c in self.chats))
         self.assertEqual(server.identity('123456789@s.whatsapp.net', 'CI2+iNYGIABIAZABAPABAtgC+InT8oiglwM=')[0], '+123456789')
 
+    def test_direct_chat_resolves_lid_sender_number(self):
+        with server.database() as con:
+            row = con.execute('''SELECT m.Z_PK,m.ZCHATSESSION,m.ZFROMJID,s.ZCONTACTJID,m.ZTEXT
+                FROM ZWAMESSAGE m JOIN ZWACHATSESSION s ON s.Z_PK=m.ZCHATSESSION
+                WHERE m.ZISFROMME=0 AND m.ZFROMJID LIKE '%@lid'
+                AND s.ZCONTACTJID LIKE '%@s.whatsapp.net'
+                AND EXISTS (SELECT 1 FROM ZWAGROUPMEMBER g WHERE g.ZMEMBERJID=m.ZFROMJID)
+                AND length(m.ZTEXT) BETWEEN 25 AND 90 LIMIT 1''').fetchone()
+        self.assertIsNotNone(row)
+        expected = '+' + row[3].split('@')[0]
+        self.assertTrue(server.identity(row[2])[1] == expected)
+        chat = next(c for c in self.chats if c['id'] == row[1])
+        self.assertTrue(chat['number'] == expected)
+        window = self.get(f'/api/messages?chat={row[1]}&around={row[0]}&limit=10')
+        message = next(m for m in window['messages'] if m['id'] == row[0])
+        self.assertTrue(message['sender_number'] == expected)
+        results = self.get('/api/search?' + urlencode({'chat': row[1], 'q': row[4], 'limit': 100}))
+        result = next(m for m in results['results'] if m['id'] == row[0])
+        self.assertTrue(result['sender_number'] == expected)
+        with server.database() as con:
+            group = con.execute('''SELECT m.Z_PK,m.ZCHATSESSION FROM ZWAMESSAGE m
+                JOIN ZWAGROUPMEMBER g ON g.Z_PK=m.ZGROUPMEMBER
+                WHERE m.ZISFROMME=0 AND m.ZFROMJID LIKE '%@g.us'
+                AND g.ZMEMBERJID=? LIMIT 1''', (row[2],)).fetchone()
+        self.assertIsNotNone(group)
+        window = self.get(f'/api/messages?chat={group[1]}&around={group[0]}&limit=10')
+        message = next(m for m in window['messages'] if m['id'] == group[0])
+        self.assertTrue(message['sender_number'] == expected)
+
+    def test_direct_lid_mapping_rejects_conflicts(self):
+        pairs = [('first@lid', '15550000001@s.whatsapp.net'),
+                 ('first@lid', '15550000001@c.us'),
+                 ('second@lid', '15550000002@s.whatsapp.net'),
+                 ('second@lid', '15550000003@s.whatsapp.net'),
+                 ('third@lid', 'opaque@s.whatsapp.net')]
+        self.assertEqual(server.direct_lid_numbers(pairs), {'first@lid': '15550000001'})
+
     def test_plain_text_metadata_is_not_attachment(self):
         with server.database() as con:
             row = con.execute('''SELECT m.Z_PK,m.ZCHATSESSION FROM ZWAMESSAGE m
@@ -62,6 +99,42 @@ class ViewerTests(unittest.TestCase):
         self.assertTrue(message['media'])
         self.assertIsNone(message['attachment'])
         self.assertTrue(message['text'])
+
+    def test_group_sender_uses_member_identity(self):
+        with server.database() as con:
+            row = con.execute('''SELECT m.Z_PK,m.ZCHATSESSION,m.ZTEXT,
+                g.ZMEMBERJID,g.ZCONTACTNAME,g.ZCONTACTABID,m.ZPUSHNAME
+                FROM ZWAMESSAGE m JOIN ZWAGROUPMEMBER g ON g.Z_PK=m.ZGROUPMEMBER
+                WHERE m.ZISFROMME=0 AND m.ZFROMJID LIKE '%@g.us'
+                AND COALESCE(m.ZPUSHNAME,'')='' AND g.ZMEMBERJID NOT LIKE '%@g.us'
+                AND length(m.ZTEXT) BETWEEN 25 AND 90 LIMIT 1''').fetchone()
+        self.assertIsNotNone(row)
+        expected, number = server.identity(row[3], server.readable(row[4]) or row[6], row[5])
+        self.assertTrue(expected not in ('Group chat', 'Unknown contact'))
+        window = self.get(f'/api/messages?chat={row[1]}&around={row[0]}&limit=10')
+        message = next(m for m in window['messages'] if m['id'] == row[0])
+        self.assertTrue(message['sender'] == expected)
+        self.assertTrue(message['from_jid'] == row[3])
+        self.assertTrue(message['sender_number'] == number)
+        results = self.get('/api/search?' + urlencode({'chat': row[1], 'q': row[2], 'limit': 100}))
+        result = next(m for m in results['results'] if m['id'] == row[0])
+        self.assertTrue(result['sender'] == expected)
+        self.assertTrue(result['from_jid'] == row[3])
+        self.assertTrue(result['sender_number'] == number)
+
+    def test_logo_and_static_allowlist(self):
+        with urlopen(self.base + '/logo.svg?v=2') as response:
+            self.assertEqual(response.headers.get_content_type(), 'image/svg+xml')
+            self.assertEqual(response.headers['Cache-Control'], 'no-store')
+            self.assertIn(b'<title>Whats Bayz</title>', response.read())
+            self.assertIn("default-src 'self'", response.headers['Content-Security-Policy'])
+        with urlopen(self.base + '/') as response:
+            self.assertEqual(response.headers['Cache-Control'], 'no-store')
+            self.assertIn(b'sizes="any" href="/logo.svg?v=2"', response.read())
+        for path in ('/server.py', '/store/ChatStorage.sqlite', '/nested/index.html'):
+            with self.assertRaises(HTTPError) as error:
+                urlopen(self.base + path)
+            self.assertEqual(error.exception.code, 404)
 
     def test_store_is_project_local(self):
         self.assertEqual(server.BACKUP, server.ROOT / 'store')

@@ -21,10 +21,20 @@ The following is a retrospective of work completed on 2026-10-06. No private cha
 | 11 | Verified imported files, database integrity, independent copies, permissions and Git exclusion. | The store is self-contained. |
 | 12 | Deleted approved old viewer/backup/iMazing directories and temporary browser tooling. Reran integration tests. | Only this project's task data remains; do not assume a recoverable original exists. |
 | 13 | Added contributor instructions, retrospective ADRs and this development guide. | Future decisions and work can be continued with context. |
+| 14 | Fixed group sender labels in messages and search results using linked group member JIDs, contact names and address-book IDs. | Message `ZFROMJID` can identify the group rather than the sender. Store remains unchanged. |
+| 15 | Added clickable contact details, resolved sender numbers and an original local SVG logo for sidebar, welcome screen, favicon and README. | Native dialogs preserve keyboard access; search sender and jump buttons remain separate. Only explicitly allowlisted static files are served. |
+| 16 | Versioned the favicon URL and added no-store headers to static responses. | Browsers can retain a stale tab icon even while the page displays new branding. |
+| 17 | Clarified unresolved-number popup wording after read-only investigation of alternate identity sources. | Missing identity links do not prove a phone number is absent everywhere in the backup; never infer a phone number from a LID or display-name match. |
+| 18 | Resolved sender LIDs through unambiguous incoming-message links to phone-addressed direct conversations. | Earlier investigation missed this source. Contact popups now reuse the phone identity already shown in the corresponding direct-chat header, including linked group senders. No store edits. |
+| 19 | Rewrote README for independent users importing their own backup; added configurable local port and private-store-free configuration tests. | No personal path, config file or runtime dependency required. Separate fresh installations preserve existing stores; listening address stays loopback-only. |
 
 ## Validation baseline
 
-- 10 integration tests in `test_viewer.py`, requiring the populated local store.
+- 14 tests in `test_viewer.py`; integration cases require the populated local store. All passed after direct-conversation LID resolution.
+- 5 additional tests in `test_config.py` require no backup: default/custom loopback ports, invalid ports, bind-error guidance and clean Control-C handling. All 19 tests passed after portable setup changes; both CLI help commands checked. No fresh import, Windows/Linux validation or new browser check performed for the setup change.
+- New regression verifies direct-chat header, message/search sender number and linked group sender agree. Invented mapping pairs test conflicting-number rejection and equivalent phone-JID suffixes. Backend-only resolution change; browser was not rerun for this change.
+- Group sender regression checks message/search labels and phone numbers for an incoming group message with no push name. Static regression checks SVG MIME type, CSP and rejection of source/store paths.
+- Temporary Chrome checks with invented API data passed at 1440×1000 and 390×844: logo placements, sender dialogs, keyboard activation, Escape/focus return, popup bounds, search contact versus jump controls, unavailable numbers, safe text and direct-chat titles. No private browser records or screenshots used; tooling/profile remain outside the repository.
 - Test areas: earliest/forward/backward history, name fallback, available media/ranges, plain-text false-attachment regression, project-local storage, whole-chat search, result paging, literal search and cross-chat jump rejection.
 - Migration checks: manifest entries had local files with matching sizes, independent file inodes, private permissions, SQLite `quick_check` and ignored store paths.
 - Prior temporary Chrome checks: UI branding/theme, scrolling, false-card regression, search, visible result targets and mobile layout.

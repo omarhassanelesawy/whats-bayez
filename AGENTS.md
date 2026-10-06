@@ -14,6 +14,7 @@ Read [README.md](README.md), [development history and next steps](docs/DEVELOPME
 | `index.html` | HTML, CSS and vanilla JavaScript UI; no build step |
 | `import_backup.py` | One-time import of related data into an empty private store |
 | `test_viewer.py` | Integration tests against the existing local store |
+| `test_config.py` | CLI configuration tests without private data |
 | `store/` | Sensitive, Git-ignored databases and media; never source code or fixtures |
 | `docs/adr/` | Accepted architectural decisions and their consequences |
 
@@ -53,14 +54,14 @@ From the project root:
 
 ```bash
 python3 server.py
-python3 -m unittest -v test_viewer.py
+python3 -m unittest -v test_config.py test_viewer.py
 git status --short
 git check-ignore -v store/ChatStorage.sqlite store/Manifest.db
 ```
 
-Viewer URL: `http://127.0.0.1:8765`. Stop the existing server before starting another. Restart after backend changes and hard-refresh after frontend changes.
+Viewer URL: `http://127.0.0.1:8765`; `python3 server.py --port 8877` selects another loopback-only port. Stop the existing server before starting another. Restart after backend changes and hard-refresh after frontend changes.
 
-Tests require the populated private store and suitable records. A fresh clone will not contain the store; report that prerequisite rather than silently manufacturing private fixtures or deleting existing data. The current baseline is 10 integration tests. Browser automation is not a committed project dependency; past temporary browser tooling was removed during cleanup.
+The viewer suite requires the populated private store and suitable records; `test_config.py` can run independently without a backup. A fresh clone will not contain the store; report that prerequisite rather than silently manufacturing private fixtures or deleting existing data. The current baseline is 19 tests: 14 viewer tests and 5 configuration tests. Browser automation is not a committed project dependency; temporary tooling stays outside the repository.
 
 ## Documentation conventions
 

@@ -8,6 +8,7 @@ import sqlite3
 import mimetypes
 import re
 import hashlib
+import argparse
 from functools import lru_cache
 
 ROOT = Path(__file__).resolve().parent
@@ -56,7 +57,26 @@ def contacts():
         for jid, name in con.execute('SELECT ZJID,ZPUSHNAME FROM ZWAPROFILEPUSHNAME'):
             if name:
                 by_jid.setdefault(jid, name)
+        # Incoming messages in a phone-addressed direct chat can use a LID.
+        # The conversation supplies the peer's phone identity, not a name guess.
+        pairs = con.execute('''SELECT DISTINCT m.ZFROMJID,s.ZCONTACTJID
+            FROM ZWAMESSAGE m JOIN ZWACHATSESSION s ON s.Z_PK=m.ZCHATSESSION
+            WHERE m.ZISFROMME=0 AND m.ZFROMJID LIKE '%@lid'
+            AND (s.ZCONTACTJID LIKE '%@s.whatsapp.net' OR s.ZCONTACTJID LIKE '%@c.us')''')
+        for lid, number in direct_lid_numbers(pairs).items():
+            lid_numbers.setdefault(lid, number)
+            lid_numbers.setdefault(lid.split('@')[0], number)
     return by_id, by_number, by_jid, lid_numbers
+
+
+def direct_lid_numbers(pairs):
+    candidates = {}
+    for lid, phone_jid in pairs:
+        number = phone_jid.split('@')[0]
+        if re.fullmatch(r'\d+', number):
+            candidates.setdefault(lid, set()).add(number)
+    # Conflicting evidence must not silently choose someone else's number.
+    return {lid: next(iter(numbers)) for lid, numbers in candidates.items() if len(numbers) == 1}
 
 
 def readable(value):
@@ -133,14 +153,16 @@ class Handler(BaseHTTPRequestHandler):
         elif parsed.path == "/api/media":
             self.media(parse_qs(parsed.query))
         else:
-            path = ROOT / ("index.html" if parsed.path == "/" else parsed.path.lstrip("/"))
-            if path.name != 'index.html' or not path.is_file() or ROOT not in path.resolve().parents:
+            static = {'/': 'index.html', '/index.html': 'index.html', '/logo.svg': 'logo.svg'}
+            path = ROOT / static.get(parsed.path, '')
+            if parsed.path not in static or not path.is_file() or ROOT not in path.resolve().parents:
                 self.send_error(404)
                 return
             data = path.read_bytes()
             self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Type", "image/svg+xml" if path.suffix == '.svg' else "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "no-store")
             self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; media-src 'self'; connect-src 'self'; frame-ancestors 'none'")
             self.end_headers()
             self.wfile.write(data)
@@ -195,13 +217,16 @@ class Handler(BaseHTTPRequestHandler):
             args.append(limit + 1)
             direction = 'ASC' if ascending else 'DESC'
             select = """SELECT m.Z_PK id, m.ZMESSAGEDATE date, m.ZTEXT text,
-                         m.ZISFROMME outgoing, m.ZPUSHNAME sender, m.ZFROMJID from_jid,
+                          m.ZISFROMME outgoing, m.ZPUSHNAME sender,
+                          COALESCE(NULLIF(g.ZMEMBERJID,''),m.ZFROMJID) from_jid,
+                          g.ZCONTACTNAME member_name, g.ZCONTACTABID sender_abid,
                          COALESCE(m.ZSORT,0) sort,
                          m.ZMESSAGETYPE type, m.ZSTARRED starred, m.ZMEDIAITEM media,
                          a.ZMEDIALOCALPATH path, a.ZTHUMBNAILLOCALPATH thumbnail,
                           a.ZTITLE title, a.ZVCARDSTRING vcard, a.ZVCARDNAME contact_name,
                           a.ZLATITUDE latitude, a.ZLONGITUDE longitude
-                       FROM ZWAMESSAGE m LEFT JOIN ZWAMEDIAITEM a ON a.Z_PK=m.ZMEDIAITEM"""
+                        FROM ZWAMESSAGE m LEFT JOIN ZWAMEDIAITEM a ON a.Z_PK=m.ZMEDIAITEM
+                        LEFT JOIN ZWAGROUPMEMBER g ON g.Z_PK=m.ZGROUPMEMBER"""
             around = query.get('around', [None])[0]
             if around is not None:
                 target = con.execute('SELECT Z_PK,COALESCE(ZSORT,0) FROM ZWAMESSAGE WHERE Z_PK=? AND ZCHATSESSION=?', (int(around),chat)).fetchone()
@@ -228,7 +253,7 @@ class Handler(BaseHTTPRequestHandler):
             con.close()
             messages = [dict(r) for r in rows]
             for m in messages:
-                m['sender'], _ = identity(m['from_jid'], m['sender'])
+                m['sender'], m['sender_number'] = identity(m['from_jid'], readable(m.pop('member_name')) or m['sender'], m.pop('sender_abid'))
                 file = media_file(m['path'])
                 if not m['thumbnail'] and m['path']:
                     fallback = str(Path(m['path']).with_suffix('.thumb'))
@@ -264,7 +289,8 @@ class Handler(BaseHTTPRequestHandler):
             with database() as con:
                 con.row_factory = sqlite3.Row
                 con.create_function('casefold', 1, lambda text: (text or '').casefold(), deterministic=True)
-                join = ' FROM ZWAMESSAGE m LEFT JOIN ZWAMEDIAITEM a ON a.Z_PK=m.ZMEDIAITEM '
+                join = ''' FROM ZWAMESSAGE m LEFT JOIN ZWAMEDIAITEM a ON a.Z_PK=m.ZMEDIAITEM
+                    LEFT JOIN ZWAGROUPMEMBER g ON g.Z_PK=m.ZGROUPMEMBER '''
                 where = '''WHERE m.ZCHATSESSION=? AND (
                     instr(casefold(m.ZTEXT),?)>0 OR instr(casefold(a.ZTITLE),?)>0
                     OR instr(casefold(a.ZVCARDNAME),?)>0 OR instr(casefold(m.ZPUSHNAME),?)>0)'''
@@ -272,13 +298,14 @@ class Handler(BaseHTTPRequestHandler):
                 total = con.execute('SELECT COUNT(*)' + join + where, params).fetchone()[0]
                 rows = con.execute('''SELECT m.Z_PK id, m.ZMESSAGEDATE date,
                     COALESCE(m.ZSORT,0) sort,m.ZTEXT text,m.ZISFROMME outgoing,
-                    m.ZPUSHNAME sender,m.ZFROMJID from_jid,a.ZTITLE title,
+                    m.ZPUSHNAME sender,COALESCE(NULLIF(g.ZMEMBERJID,''),m.ZFROMJID) from_jid,
+                    g.ZCONTACTNAME member_name,g.ZCONTACTABID sender_abid,a.ZTITLE title,
                     a.ZVCARDNAME contact_name,m.ZMEDIAITEM media''' + join + where +
                     ' ORDER BY COALESCE(m.ZSORT,0) DESC,m.Z_PK DESC LIMIT ? OFFSET ?',
                     params + [limit, offset]).fetchall()
             results = [dict(row) for row in rows]
             for item in results:
-                item['sender'], _ = identity(item['from_jid'], item['sender'])
+                item['sender'], item['sender_number'] = identity(item['from_jid'], readable(item.pop('member_name')) or item['sender'], item.pop('sender_abid'))
             self.send_json({'results': results, 'total': total, 'has_more': offset + len(results) < total})
         except ValueError:
             self.send_json({'error': 'Invalid search parameters'}, 400)
@@ -348,6 +375,32 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(400)
 
 
-if __name__ == "__main__":
-    print(f"Whats Bayz: http://127.0.0.1:8765  (local only; DB: {DB})")
-    ThreadingHTTPServer(("127.0.0.1", 8765), Handler).serve_forever()
+def port_number(value):
+    try:
+        port = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError('Port must be an integer from 1 to 65535.')
+    if not 1 <= port <= 65535:
+        raise argparse.ArgumentTypeError('Port must be an integer from 1 to 65535.')
+    return port
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--port', type=port_number, default=8765,
+                        help='Local HTTP port (default: 8765); always binds to 127.0.0.1')
+    args = parser.parse_args(argv)
+    try:
+        httpd = ThreadingHTTPServer(('127.0.0.1', args.port), Handler)
+    except OSError as error:
+        parser.exit(1, f'Could not bind to 127.0.0.1:{args.port}: {error}. Try another --port.\n')
+    with httpd:
+        print(f'Whats Bayz: http://127.0.0.1:{args.port}  (local only; DB: {DB})')
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            pass
+
+
+if __name__ == '__main__':
+    main()

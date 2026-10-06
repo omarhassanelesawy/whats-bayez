@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light">
   <title>Whats Bayz — your conversations</title>
+  <link rel="icon" type="image/svg+xml" sizes="any" href="/logo.svg?v=2">
   <style>
     :root{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-synthesis:none;color:#202435;background:#e9ebf1;--accent:#6757d9;--muted:#788195;--line:#e7e9f0}
     *{box-sizing:border-box}body{margin:0;padding:20px;height:100vh;height:100dvh;overflow:hidden}button,input{font:inherit}button,a,input{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{cursor:wait;opacity:.55}button:focus-visible,a:focus-visible{outline:3px solid #a499ff;outline-offset:3px}button{transition:background .15s,transform .15s}button:active{transform:translateY(1px)}svg{width:19px;height:19px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}button svg{pointer-events:none}.sprite{display:none}
@@ -19,6 +20,7 @@
     .app{box-shadow:0 18px 65px #153b2518}.sidebar{background:#073e35;color:#eef8f4}.brand-logo{background:#25a880;box-shadow:0 5px 18px #02231e40}.brand small{color:#92b7aa}.side-search{background:#164e43;border-color:#286050;color:#91bbae}.side-search input::placeholder{color:#97bbae}.side-search:focus-within{border-color:#6fc5a2}.side-heading{color:#9fbdaf}.tabs button{color:#a0c4b6}.tabs button.active{background:#22634d;color:#d5fae7}.tabs button:hover{background:#205745}#chatlist{scrollbar-color:#386959 transparent}.chat:hover{background:#155043}.chat.active{background:#20614b;box-shadow:inset 3px 0 #78d2a7}.chatdate{color:#a1b8ae}.preview{color:#a2c0b3}.avatar{background:#23594e;color:#b3e1cd}.chat:nth-child(4n+2) .avatar{background:#315d4b;color:#cae4c8}.chat:nth-child(4n+3) .avatar{background:#235d58;color:#afe0d8}.chat:nth-child(4n) .avatar{background:#435e43;color:#d1e6bd}.side-footer{color:#a5c3b4;border-color:#28564a}.side-footer svg{color:#80d4ac}
     main{background:#efeae2}.welcome{background:radial-gradient(ellipse at 50% 30%,#e4f3e9,transparent 65%)}.welcome-icon{box-shadow:0 12px 40px #306b4615}.eyebrow{color:#598672}.welcome p{color:#75857a}.welcome .privacy-pill{border-color:#d9e7de;color:#698473}.conversation-head .avatar{background:#e2f3e8;color:#24845b}.head-sub .dot{background:#25a880}.tool{color:#678077}.tool:hover{background:#edf8f1;border-color:#bcddc9;color:#008069}.tool.selected{background:#e1f4e8;border-color:#bcddc9}.tool.primary{background:#008069;border-color:#008069}.messages{scrollbar-color:#bccbbf transparent;background-image:radial-gradient(#929c8720 .8px,transparent .8px);background-size:20px 20px}.history{color:#819384}.history button{border-color:#dce6de;color:#43866b}.history button:hover{border-color:#afd2bd;color:#008069}.day{color:#6f8376}.bubble{border-color:#e1e8e1;box-shadow:0 1px 2px #263b2b08}.bubble.out{border-color:#d0e9c9;background:#d9fdd3}.bubble.highlight{outline-color:#41ad85;background:#fff2bf}.sender{color:#168066}.stamp{color:#8c9a8f}.out .stamp{color:#7c9778}.file-link{border-color:#cee0d3;color:#3e755c}.missing{border-color:#c6d8cb;color:#768e7b}.thread-footer{color:#849489}.search-heading h3{color:#214736}.search-field{border-color:#bedbcb;background:#f4faf6;color:#4d9676}.search-field:focus-within{box-shadow:0 0 0 3px #e4f4e9;border-color:#70b992}.search-summary,.search-help{color:#87998d}.result{color:#466153}.result:hover{background:#f0f8f3}.result.active{background:#e7f5ec;border-color:#cbe4d4}.result-sender{color:#2c8c64}.result-top{color:#85998c}.result-bottom{color:#91a296}.result-more{border-color:#c7e0d0;background:#f1f9f4;color:#408165}.lightbox-bar{color:#738779}button:focus-visible,a:focus-visible{outline-color:#52b78e}
     .tool.primary:hover{background:#006953;border-color:#006953;color:white}.loader{border-color:#c6dfd1;border-top-color:var(--accent)}
+    .brand-logo img{width:40px;height:40px}.welcome-icon img{width:72px;height:72px}.brand-logo{background:none;overflow:hidden}.sender-button{display:block;border:0;background:none;padding:3px 0;text-align:start;overflow-wrap:anywhere}.sender-button:hover{text-decoration:underline}.head-title.sender-button{max-width:100%;color:inherit}.contact-dialog{width:min(360px,calc(100vw - 32px));border:1px solid var(--line);border-radius:18px;padding:24px;color:#172b24;box-shadow:0 20px 80px #073e3533}.contact-dialog::backdrop{background:#073e3566}.contact-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.contact-heading h2{margin:0;font-size:17px}.contact-name{font-weight:650;overflow-wrap:anywhere;margin:22px 0 8px}.contact-number{margin:0 0 22px;color:#008069;user-select:text;overflow-wrap:anywhere}.contact-note{font-size:12px;color:var(--muted);line-height:1.6;margin:0}.result-jump{display:block;width:100%;text-align:start;border:0;background:none;color:inherit;padding:0}.result-top .sender-button{font-size:inherit;margin:0;min-width:0}.result-jump:hover .result-bottom{text-decoration:underline}
   </style>
 </head>
 <body>
@@ -36,16 +38,17 @@
 </defs></svg>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><div class="brand-logo"><svg aria-hidden="true"><use href="#i-message"/></svg></div><div><h1>Whats Bayz</h1><small>YOUR CONVERSATIONS, PRESERVED</small></div></div>
+    <div class="brand"><div class="brand-logo"><img src="/logo.svg" alt="" width="40" height="40"></div><div><h1>Whats Bayz</h1><small>YOUR CONVERSATIONS, PRESERVED</small></div></div>
     <label class="side-search"><svg aria-hidden="true"><use href="#i-search"/></svg><input id="search" type="search" placeholder="Find a conversation…" aria-label="Find conversations" autocomplete="off"></label>
     <div class="side-heading"><span>Conversations</span><span id="chatcount">—</span></div>
     <div class="tabs" role="group" aria-label="Filter conversations"><button class="active" data-filter="all" aria-pressed="true">All</button><button data-filter="groups" aria-pressed="false">Groups</button><button data-filter="archived" aria-pressed="false">Archived</button></div>
     <nav id="chatlist" aria-label="Conversations"><div class="empty"><span class="loader"></span>Opening Whats Bayz…</div></nav>
     <div class="side-footer"><svg aria-hidden="true"><use href="#i-shield"/></svg>Local & private. Nothing uploaded.</div>
   </aside>
-  <main id="main"><div class="welcome"><div class="welcome-icon"><svg aria-hidden="true"><use href="#i-message"/></svg></div><div class="eyebrow">Welcome to Whats Bayz</div><h2>Every conversation has a story.</h2><p>Open a WhatsApp chat to explore your history, revisit shared moments, or find that one message.</p><div class="privacy-pill">Read-only backup · stays on your Mac</div></div></main>
+  <main id="main"><div class="welcome"><div class="welcome-icon"><img src="/logo.svg" alt="" width="72" height="72"></div><div class="eyebrow">Welcome to Whats Bayz</div><h2>Every conversation has a story.</h2><p>Open a WhatsApp chat to explore your history, revisit shared moments, or find that one message.</p><div class="privacy-pill">Read-only backup · stays on your Mac</div></div></main>
 </div>
 <dialog id="lightbox" class="lightbox"><div class="lightbox-bar"><span class="lightbox-title"></span><button class="tool icon" id="close-lightbox" aria-label="Close image"><svg aria-hidden="true"><use href="#i-close"/></svg></button></div><img alt="Attachment"></dialog>
+<dialog id="contact-dialog" class="contact-dialog" aria-labelledby="contact-heading" aria-describedby="contact-note"><div class="contact-heading"><h2 id="contact-heading">Contact details</h2><button class="tool icon" id="close-contact" aria-label="Close contact details" autofocus><svg aria-hidden="true"><use href="#i-close"/></svg></button></div><p class="contact-name" dir="auto"></p><p class="contact-number" dir="ltr"></p><p id="contact-note" class="contact-note">From your local backup. No live lookup or messaging.</p></dialog>
 <script>
 'use strict';
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -71,6 +74,19 @@ function element(tag, className, text) {
 }
 function status(box, text, error = false) {
   box.replaceChildren(element('div', error ? 'error-note' : 'empty', text));
+}
+function senderButton(name, number, className = 'sender') {
+  const button = element('button', className + ' sender-button', name || 'Unknown contact');
+  button.type = 'button';
+  button.setAttribute('aria-label', `Show contact details for ${name || 'Unknown contact'}`);
+  button.setAttribute('aria-haspopup', 'dialog');
+  button.addEventListener('click', () => {
+    const dialog = $('#contact-dialog');
+    $('.contact-name', dialog).textContent = name || 'Unknown contact';
+    $('.contact-number', dialog).textContent = number || 'Phone number not resolved from backup';
+    dialog.showModal();
+  });
+  return button;
 }
 function highlight(el, value, query) {
   const text = String(value || '');
@@ -135,6 +151,7 @@ function header(c) {
     </div>`;
   $('.conversation-head .avatar').textContent = initials(c.name);
   $('.head-title').textContent = c.name;
+  if (!c.jid?.endsWith('@g.us')) $('.head-title').replaceWith(senderButton(c.name, c.number, 'head-title'));
   $('.chat-details').textContent = `${c.number ? c.number + ' · ' : ''}${c.total.toLocaleString()} messages${c.archived ? ' · Archived' : ''}`;
   $('#chat-search').addEventListener('input', () => {
     clearTimeout(chatSearchTimer);
@@ -249,7 +266,7 @@ function messageNodes(items, previousDay = '') {
     if (day !== lastDay) { fragment.append(element('div', 'day', day)); lastDay = day; }
     const bubble = element('article', 'bubble' + (m.outgoing ? ' out' : ''));
     bubble.dataset.id = m.id;
-    if (!m.outgoing && m.sender && m.sender !== 'Unknown contact') bubble.append(element('div', 'sender', m.sender));
+    if (!m.outgoing && m.sender) bubble.append(senderButton(m.sender, m.sender_number));
     attachment(bubble, m);
     const text = element('div', 'message-text'); text.dir = 'auto';
     highlight(text, m.text || m.title || (!m.attachment ? '[System or unsupported message]' : ''), resultState?.query);
@@ -344,18 +361,21 @@ function renderResults(rs) {
   $('#search-summary').textContent = `${rs.total.toLocaleString()} ${rs.total === 1 ? 'match' : 'matches'} · newest first · ${rs.results.length.toLocaleString()} shown`;
   if (!rs.results.length) { status(box, 'No matches in this conversation. Try another phrase.'); return; }
   for (const m of rs.results) {
-    const button = element('button', 'result' + (rs.selected === m.id ? ' active' : ''));
+    const card = element('article', 'result' + (rs.selected === m.id ? ' active' : ''));
+    const button = element('button', 'result-jump');
+    button.type = 'button';
     const top = element('div', 'result-top');
-    top.append(element('span', 'result-sender', m.outgoing ? 'You' : m.sender), element('span', '', date(m.date)));
+    top.append(m.outgoing ? element('span', 'result-sender', 'You') : senderButton(m.sender, m.sender_number, 'result-sender'), element('span', '', date(m.date)));
     const preview = element('div', 'result-preview'); preview.dir = 'auto';
     highlight(preview, searchSnippet(m, rs.query), rs.query);
-    button.append(top, preview, element('div', 'result-bottom', time(m.date) + ' · Jump to message ↗'));
+    button.append(preview, element('div', 'result-bottom', time(m.date) + ' · Jump to message ↗'));
+    card.append(top, button);
     button.addEventListener('click', async () => {
       rs.selected = m.id; renderResults(rs);
       if (window.innerWidth <= 900) toggleSearch(false);
       await loadWindow($('#messages'), '&around=' + m.id, 'target', m.id);
     });
-    box.append(button);
+    box.append(card);
   }
   if (rs.more) {
     const more = element('button', 'result-more', 'Load more results');
@@ -385,7 +405,10 @@ $('.tabs').addEventListener('click', e => {
 search.addEventListener('input', () => { clearTimeout(listTimer); listTimer = setTimeout(renderChats, 120); });
 $('#close-lightbox').addEventListener('click', () => $('#lightbox').close());
 $('#lightbox').addEventListener('click', e => { if (e.target === $('#lightbox')) $('#lightbox').close(); });
+$('#close-contact').addEventListener('click', () => $('#contact-dialog').close());
+$('#contact-dialog').addEventListener('click', e => { if (e.target === $('#contact-dialog')) $('#contact-dialog').close(); });
 document.addEventListener('keydown', e => {
+  if ($('#contact-dialog').open) return;
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'f' && active && !$('#lightbox').open) { e.preventDefault(); toggleSearch(true); }
   if (e.key === 'Escape' && !$('#lightbox').open && $('#chat-search-panel') && !$('#chat-search-panel').hidden) { toggleSearch(false); $('#toggle-search').focus(); }
 });

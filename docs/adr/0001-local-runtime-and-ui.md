@@ -11,6 +11,8 @@ The user wanted to browse a Finder backup without iMazing, with no cloud upload.
 
 Use Python's `ThreadingHTTPServer` and SQLite standard-library bindings, bound to `127.0.0.1:8765`. Serve a single `index.html` containing the UI, styles and vanilla JavaScript. Database access happens on the local server; the browser receives bounded JSON pages and media responses.
 
+The original brand asset is local `logo.svg`, shared by the UI and favicon. Static routes are explicitly limited to `/`, `/index.html` and `/logo.svg`; source files and private store files are not static assets.
+
 Endpoints:
 
 - `/api/status`: local database presence.
