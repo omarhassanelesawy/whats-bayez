@@ -59,3 +59,9 @@ python3 -m unittest -v test_viewer.py
 ```
 
 Tests cover pagination, earliest history, attachments and byte ranges, false-attachment regression, names, full-chat search, search pagination, result jumps and project-local store configuration.
+
+## Development documentation
+
+- [AGENTS.md](AGENTS.md): contributor/agent rules, privacy constraints and development workflow.
+- [Architecture decisions](docs/adr/README.md): accepted decisions, alternatives and consequences.
+- [Development history and next steps](docs/DEVELOPMENT.md): completed work, validation baseline and proposed future sequence.
